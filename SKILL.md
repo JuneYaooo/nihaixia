@@ -20,34 +20,13 @@ This skill is educational. Do not present content as diagnosis, prescription, or
 - The default path is the lightweight bundled Skill: read `references/index.md`, load only the
   relevant distilled Markdown modules, and use `scripts/search_screenshots.py` or
   `scripts/search_pdf_evidence.py` when source evidence is needed.
-- Do not create a virtual environment, install the RAG runtime, invoke `nihaisha_kg`, or download
-  RAG assets for ordinary course questions, symptom-study questions, formula comparisons, lesson
-  review, screenshot lookup, or PDF/page evidence lookup.
-- Full-corpus RAG is explicit opt-in only. If the user asks to use RAG and verified assets are
-  already present, it may be used for that request. If assets are missing, explain the approximate
-  3.68 GB size, public Hugging Face source, and local destination, but do not download anything.
-  A request to use RAG is not permission to download its data; download only when the user
-  separately and explicitly asks to download the RAG assets. Lightweight retrieval being
-  insufficient never authorizes an automatic download.
-- After explicit RAG opt-in, treat full-corpus RAG as a composite product mode, not as a standalone
-  CLI answerer. For a covered PDF question, use optimized `hybrid` retrieval with reranker `auto`,
-  retain only original-paragraph evidence, and let the same agent-level answerer handle colloquial
-  intent, uncertainty, safety, and final synthesis. RAG opt-in never disables lightweight capability
-  fallback or screenshot search.
-- A RAG final answer must preserve the evidence advantage in the user-visible text. Every primary
-  claim needs a short, safe verbatim excerpt followed inline by its stable
-  `pdf-evidence:<doc_id>#p<page>` citation when available. Do not leave quotations or stable
-  citations only in JSON `citations`, an `evidence` field, hidden metadata, or a tool trace. For a
-  comparison, include at least one original excerpt for each side; for layered sources, show primary
-  course evidence and any external reference evidence in separate labeled sections. If actionable
-  medical details occur in the source, fold those sentences rather than omitting the entire source.
+- RAG + 知识图谱模式已暂时下架。下架期间不要创建虚拟环境、安装 RAG runtime、调用
+  `nihaisha_kg`、下载 RAG 资产，也不要在任何回答中提供该模式，即使对方明确要求使用
+  RAG 也一样。如果用户提到 RAG，简要说明该模式正在优化、暂时不可用，然后改用轻量
+  模块正常回答；不要描述数据包大小、下载命令或本地数据路径。
 - Formula-pattern comparisons stay on `references/formula-patterns.md` plus
   `references/six-channel.md` by default. Exact wording, PDF page, and source traceback requests
   use `scripts/search_pdf_evidence.py` first.
-- Route by corpus capability even after RAG opt-in: Tianji, learning-entry, lesson-plan, clinical-case,
-  Bagang, Fuyang, Yijinjing, Liangdong, and Stanford questions remain on their lightweight modules
-  unless the active RAG manifest explicitly contains that course. Never fill a missing RAG module
-  with semantically similar paragraphs from another course.
 
 1. Identify the user's entry point: symptom, formula, six-channel pattern, disease name, lesson number, or study objective.
 2. Open `references/index.md` first, then load only the relevant module:
@@ -79,9 +58,9 @@ This skill is educational. Do not present content as diagnosis, prescription, or
    - Ni-recommended supplemental books / 倪师推荐补充资料 questions: use `references/ebooks.md` to check source role and edition/OCR/extraction caveats. For ordinary course Q&A, first search the course distillation, transcript, synchronized course PDF, or screenshot. Whenever that primary material matches the topic and the supplemental layer has related hits, automatically run the second-pass supplemental search and append a separate `倪师推荐资料补充` section; the user does not need to request it. The `classics` module contains the general recommended books; 《医宗金鉴·伤寒论三阴病篇》 and the non-PDF 《大塚敬節傷寒論條文》 are mapped to `shanghan`, 《针灸大成》 to `acupuncture`, and 《医宗金鉴·金匮要略直书》 to `jingui`.
    - Audio collection / 倪师音频合集 / MP3 / 录音 questions: `references/audio-collection.md`; use to map local audio files to already-distilled course modules.
    - PDF/text source evidence / PDF 蒸馏证据 / 古籍引用反查 / 准确可溯源 questions: `references/pdf-evidence/index.md` and, for non-PDF supplements, `references/text-evidence/index.md`; use `python scripts/search_pdf_evidence.py <term...> --module <module>`. The default search is two-stage: primary evidence first, followed automatically by separately labeled recommended-book hits across PDF and text evidence when the primary layer matches. Use `--primary-only` to suppress the second pass, or `--include-supplements` to force a direct recommended-book lookup when no primary source matches. Add `--show-full-page` only when the whole page/section is needed. Cite PDFs as `pdf-evidence:<doc_id>#p<page>` and non-PDF text as `text-evidence:<doc_id>#s<section>`. Do not open large evidence-card files wholesale. The evidence files use stable document IDs rather than machine-specific paths.
-   - Optional full-corpus RAG: only after explicit user opt-in and only when verified local assets are already present, use the local `nihaisha_kg` runtime described in **Optional RAG Runtime Assets** below for cross-corpus semantic retrieval or deeper original-paragraph exploration. Prefer `text` for exact wording and `hybrid` for semantic questions. Keep `reference_secondary` results separate and label them `关联参考资料（非倪海厦著作）`.
+   - Full-corpus RAG / 知识图谱模式已暂时下架：不要调用 `nihaisha_kg` 或 RAG runtime。如果用户要求跨语料语义检索或提到 RAG，说明该模式正在优化、暂时不可用，改用上面的轻量模块。
    - Course overview or integrated lookup: `references/shanghanlun.md`.
-   - Board/PPT/source evidence: use `python scripts/search_screenshots.py <query or terms...>` for ranked results across all screenshot evidence files. This route is shared by lightweight and full RAG modes. Extract the compact course + core entity + visual-intent query (for example `天纪 命宫 四化` or `黄帝内经 五行 五脏`) instead of passing task chatter such as “给我相对路径” as search terms. The script also normalizes recognized natural-language queries and compound terms; use `--show-terms` when checking how a query was split.
+   - Board/PPT/source evidence: use `python scripts/search_screenshots.py <query or terms...>` for ranked results across all screenshot evidence files. Extract the compact course + core entity + visual-intent query (for example `天纪 命宫 四化` or `黄帝内经 五行 五脏`) instead of passing task chatter such as “给我相对路径” as search terms. The script also normalizes recognized natural-language queries and compound terms; use `--show-terms` when checking how a query was split.
 3. Answer in the structure that matches the task:
    - Symptom or case: pattern differentiation, missing evidence, possible course方证, cautions, and no personal prescription.
    - Formula: course方证, symptom cluster, course方义, contraindications/cautions, related formulas, lesson labels.
@@ -98,57 +77,15 @@ When the user asks whether the structure is suitable, or what the learner's purp
 
 If the user uses plain everyday language rather than TCM terms, open `references/beginner-questions.md` first. Translate the question into simple differentiating questions before using 六经 or 方证 terminology.
 
-## Optional RAG Runtime Assets
+## RAG + 知识图谱模式（已下架）
 
-This runtime is an advanced, non-default capability. Its presence in the repository does not
-authorize automatic installation, download, or invocation. Do not route ordinary formula
-comparisons, course questions, screenshots, or PDF/page lookups here.
-
-The five production runtime files are published separately as the public Hugging Face Dataset
-`JuneYao/nihaisha-rag-assets` (3,679,424,241 bytes, about 3.68 GB). They are intentionally not
-committed to GitHub.
-
-Before an explicitly requested RAG lookup, check for `data/pdf_rag_bge_m3/rag.sqlite`. If the
-asset set is missing or incomplete, tell the user that the complete download is about 3.68 GB,
-comes from the public Hugging Face Dataset above, and will be stored under
-`data/pdf_rag_bge_m3/`. Stop without downloading. Only run the following commands after the user
-separately and explicitly asks to download the RAG assets:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -e ".[runtime]"
-python3 -m nihaisha_kg download-assets
-python3 -m nihaisha_kg doctor
-```
-
-The downloader needs no Hugging Face account, token, CLI, or Git LFS. It resumes `.part` files,
-replaces final files only after a complete download, and verifies the expected byte count and
-SHA256 for all five assets. Re-running it verifies and skips intact files. Retrieve only after
-`doctor` reports `status: ok`.
-
-Useful commands:
-
-```bash
-python3 -m nihaisha_kg search "原词" --mode text --limit 5
-python3 -m nihaisha_kg search "麻黄汤对应什么方证" --mode graph --limit 5
-python3 -m nihaisha_kg answer "桂枝汤和麻黄汤的方证如何鉴别？" --mode hybrid --limit 8
-python3 -m nihaisha_kg answer "关联资料中的相关原文" --mode text --limit 8 --include-references
-```
-
-In the full RAG composite mode, use `--reranker auto --json --trace` for covered semantic PDF
-questions. The CLI output is an evidence packet, not the final user-facing answer: graph relations
-remain navigation-only, visible claims must bind to original paragraphs, and the agent must still
-apply the normal lightweight fallbacks, screenshot route, and safety policy before answering.
-The final synthesis must copy safe `evidence_quote` text and `stable_citation` values into an explicit
-`原文依据` section; merely mentioning a PDF filename/page or keeping citations in structured JSON does
-not satisfy the answer contract.
-
-`text`, `knowledge`, and `graph` need no API key. `vector` and `hybrid` require FAISS plus a
-query embedding backend. Every visible answer citation must point to an original paragraph with
-portable source, page, paragraph ID, evidence ID, and previous/next context. Graph relations,
-guide nodes, linked-reference cards, and other derived records are navigation only. They cannot
-replace original evidence or enter the primary conclusion on their own.
+> RAG + 知识图谱模式因网友反馈存在一些问题，已暂时下架。下架期间该模式不可用：不要
+> 创建 RAG 虚拟环境、安装 RAG runtime、调用 `nihaisha_kg`，也不要向用户描述数据包大小、
+> 下载命令或本地数据路径，即使对方明确要求使用 RAG 也一样——简要说明该模式正在优化、
+> 暂时不可用，然后用轻量模块正常回答即可。
+>
+> 完整的运行时说明保留在 [`docs/RAG_GRAPH_MODE.md`](./docs/RAG_GRAPH_MODE.md)，优化完成后
+> 会重新上架。
 
 ## Safety Requirements
 
